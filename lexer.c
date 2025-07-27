@@ -6,29 +6,30 @@
 #define KW_COUNT 18
 #define OPT_COUNT 9
 #define DELIM_COUNT 10
+#define tokens_size 20
 
-enum TOKEN{
+typedef enum{
     KEYWORD,
     IDENTIFIER,
     OPERATOR,
     DELIMITER,
-};
+}TOKEN;
 
 
 struct Keyword{
-    enum TOKEN t1;
+    TOKEN t1;
     char *kw_values[100];
 };
 struct Identifier{
-    enum TOKEN t2;
+    TOKEN t2;
     char *id_value;
 };
 struct Operator{
-    enum TOKEN t3;
+    TOKEN t3;
     char *opt_values[100];
 };
 struct Delimiter{
-    enum TOKEN t4;
+    TOKEN t4;
     char *delim_values[100];
 };
 
@@ -49,11 +50,12 @@ struct Operator s2 ={
 
 struct Delimiter s3 = {
         .t4 = DELIMITER,
-        .delim_values = {";", "(", ")", "{", "}", "[", "]", ",", ":", """, """}
+        .delim_values = {"=", ";", "(", ")", "{", "}", "[", "]", ",", ":", """, """}
 
 };
 
-
+char **tokens = NULL;
+int token_index = 0;
 
 int is_keyword(char *str, int length){
     for(int i=0; i<length; i++){
@@ -74,27 +76,34 @@ int is_delimiter(char *str, int length){
     return 0;
 }
 
-void print_tokens(char *lexeme){
-    if(is_keyword(lexeme, KW_COUNT)){
-        printf("[%-10s] -> KEYWORD\n", lexeme);
-    }else if(isdigit(lexeme[0])){
-        printf("[%-10s] -> NUM_LITERAL\n", lexeme); 
-    }else if(isalpha(lexeme[0])){
-        printf("[%-10s] -> IDENTIFIER\n",lexeme);
-    }else if(is_operator(lexeme,  OPT_COUNT)){
-        printf("[%-10s] -> OPERATOR\n", lexeme);
-    }else if(is_delimiter(lexeme,  DELIM_COUNT)){
-        printf("[%-10s] -> DELIMITER\n", lexeme);
-    }else{ 
-        printf("[%-10s] -> UNKNOWN\n", lexeme);
-    }
+void token_list(char *lexeme){
+  if(tokens == NULL){
+    printf("Couldn't allocate memory for tokens\n");
+  }
+
+  if(token_index>=tokens_size)return;
+
+  if(is_keyword(lexeme, KW_COUNT)){
+        tokens[token_index] = strdup(lexeme);    
+  }else if(isdigit(lexeme[0])){
+        tokens[token_index] = strdup(lexeme);  
+  }else if(isalpha(lexeme[0])){
+        tokens[token_index] = strdup(lexeme); 
+  }else if(is_operator(lexeme,  OPT_COUNT)){
+         tokens[token_index] = strdup(lexeme);
+  }else if(is_delimiter(lexeme,  DELIM_COUNT)){
+         tokens[token_index]  = strdup(lexeme);
+  }else{ 
+        tokens[token_index]= strdup(lexeme); 
+  }
+    token_index++; 
 }
 
 void tokenize(char *line) {
-    char *token = strtok(line, " \t\n(){};,\"");  
+    char *token = strtok(line, " ");  
     while (token != NULL) {
-        print_tokens(token);
-        token = strtok(NULL, " \t\n(){};,\"");   
+        token_list(token);
+        token = strtok(NULL, " ");   
     }
 }
 
@@ -107,11 +116,21 @@ int main(){
        perror("File not found");
        return 1;
    }
-   char line[256];
+   //char line[256];
+   char *line = (char *)malloc(256);
+   tokens = malloc(tokens_size*sizeof(char *)); 
+   if(line == NULL){
+       printf("Couldn't allocate memeory for line\n");
+   }
    while(fgets(line, sizeof(line),fp)){
        tokenize(line);
    }
    fclose(fp);
-
+   for(int i=0; i<tokens_size; i++){
+       printf("%s\n",tokens[i]);
+       free(tokens[i]);
+   }
+   free(line);
+   free(tokens);
    return 0;
 }
