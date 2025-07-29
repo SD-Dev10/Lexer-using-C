@@ -58,19 +58,19 @@ struct Delimiter s3 = {
 char **tokens = NULL;
 int token_index = 0;
 
-int is_keyword(char *str, int length){
+static inline int is_keyword(char *str, int length){
     for(int i=0; i<length; i++){
         if(strcmp(str, s1.kw_values[i])==0) return 1;
    }
    return 0;
 }
-int is_operator(char *str, int length){
+static inline int is_operator(char *str, int length){
     for(int i=0; i<length; i++){
         if(strcmp(str,s2.opt_values[i])==0) return 1;
     }
     return 0;
 }
-int is_delimiter(char *str, int length){
+static inline int is_delimiter(char *str, int length){
     for(int i=0; i<length; i++){
         if(strcmp(str,s3.delim_values[i])==0) return 1;
     }
