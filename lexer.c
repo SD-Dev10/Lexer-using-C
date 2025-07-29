@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#define KW_COUNT 18
-#define OPT_COUNT 9
+#define KW_COUNT 34
+#define OPT_COUNT 8
 #define DELIM_COUNT 10
 #define tokens_size 200
 #define LINE_SIZE 256
@@ -37,21 +37,23 @@ struct Delimiter{
 
 struct Keyword s1 = {
         .t1 = KEYWORD,
-        .kw_values = {"int", "float", "double", "char", "void", "for", "while", "do-while", "for", "if", "else", 
-                      "else if", "typedef", "enum", "struct", "return", "const", "sizeof"}
+        .kw_values = {"int", "float", "double", "char", "void", "for", "while", "do", "if", "else", 
+                      "typedef", "enum", "struct", "return", "const", "sizeof", "inline", "static", "extern", "long",
+                       "default", "short","register", "restrict", "signed", "unsigned", "union", "switch", "continue", "goto",
+                        "case", "break","volatile", "auto"}
 
 };
 
 
 struct Operator s2 ={
         .t3 = OPERATOR,
-        .opt_values = {"+","-","/","=","*","&","!","%","#"}
+        .opt_values = {"+","-","/","=","*","&","!","%"}
 };
 
 
 struct Delimiter s3 = {
         .t4 = DELIMITER,
-        .delim_values = {"=", ";", "(", ")", "{", "}", "[", "]", ",", ":", """, """}
+        .delim_values = {"=", ";", "(", ")", "{", "}", "[", "]", ",", ":"}
 
 };
 
