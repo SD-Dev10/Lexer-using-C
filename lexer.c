@@ -6,7 +6,8 @@
 #define KW_COUNT 18
 #define OPT_COUNT 9
 #define DELIM_COUNT 10
-#define tokens_size 20
+#define tokens_size 200
+#define LINE_SIZE 256
 
 typedef enum{
     KEYWORD,
@@ -100,12 +101,36 @@ void token_list(char *lexeme){
 }
 
 void tokenize(char *line) {
-    char *token = strtok(line, " ");  
-    while (token != NULL) {
-        token_list(token);
-        token = strtok(NULL, " ");   
+    while (*line != '\0') {
+        if (isspace(*line)) {
+            line++;
+            continue;
+        }
+
+        if (ispunct(*line)) {
+            // single-character token
+            char temp[2] = {*line, '\0'};
+            token_list(temp);
+            line++;
+            continue;
+        }
+
+        // Collect a word (identifier/keyword/number)
+        char *start = line;
+        while (*line != '\0' && !isspace(*line) && !ispunct(*line)) {
+            line++;
+        }
+        int length = line - start;
+
+        char *lexeme = malloc(length + 1);
+        strncpy(lexeme, start, length);
+        lexeme[length] = '\0';
+
+        token_list(lexeme);
+        free(lexeme);
     }
 }
+
 
 
 
@@ -117,12 +142,13 @@ int main(){
        return 1;
    }
    //char line[256];
-   char *line = (char *)malloc(256);
+   char *line = (char *)malloc(LINE_SIZE);
    tokens = malloc(tokens_size*sizeof(char *)); 
-   if(line == NULL){
-       printf("Couldn't allocate memeory for line\n");
+   if(line == NULL || tokens == NULL){
+       printf("Couldn't allocate memeory\n");
    }
-   while(fgets(line, sizeof(line),fp)){
+   while(fgets(line, LINE_SIZE,fp)){
+       line[strcspn(line, "\n")] = '\0';
        tokenize(line);
    }
    fclose(fp);
